@@ -26,8 +26,8 @@ it("renders", () => {
 
   const myComponent = new MyComponent()
 
-  load({ Fn2, patch, renderLib })
-  load({ myComponent })
+  load(Fn2, { Fn2, myComponent, patch, renderLib })
+
   expect(myComponent.render("id")).toEqual(
     expect.any(Element)
   )
