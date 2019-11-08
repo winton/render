@@ -1,7 +1,7 @@
 {
-  "name": "@winton/render",
+  "name": "@fn2/render",
   "version": "0.0.1",
-  "description": "Micro-universal web components",
+  "description": "Micro web components 🧩",
   "main": "dist/cjs/index.js",
   "scripts": {
     "build": "./bin/build",
@@ -13,7 +13,7 @@
     "type": "git",
     "url": "git+ssh://git@github.com/winton/render.git"
   },
-  "author": " <>",
+  "author": "Winton Welsh <mail@wintoni.us>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/winton/render/issues"
