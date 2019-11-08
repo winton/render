@@ -6,6 +6,7 @@
     "declaration": true,
     "esModuleInterop": true,
     "jsx": "react",
+    "moduleResolution": "node",
     "sourceMap": true
   }
 }
