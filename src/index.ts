@@ -1,5 +1,5 @@
-import patch from "fn2/dist/cjs/patch"
-import { LoadedEvent } from "@loaded/loaded"
+import patch from "@fn2/patch"
+import { LoadedEvent } from "@fn2/loaded"
 
 declare global {
   // eslint-disable-next-line
@@ -29,40 +29,35 @@ export class Render {
   }
 
   loadedBy(event: LoadedEvent): void {
-    const { by, byName } = event
+    const { by } = event
 
-    if (by.render) {
-      this.patch.add(
+    if (by.build) {
+      this.patch.create(
         by,
-        byName,
-        "render",
+        "build",
         {
           beforeRender: this.beforeRender.bind(this),
-          prependArg: event,
+          args: [event],
           order: -1,
         },
-        { render: by.render.bind(by) },
+        { build: by.build.bind(by), order: 0 },
         {
           afterRender: this.afterRender.bind(this),
-          prependOutputArg: event,
-          return: "afterRender",
+          args: [event],
         }
       )
     }
 
     if (by.force) {
-      this.patch.add(
+      this.patch.create(
         by,
-        byName,
         "force",
         {
           beforeForce: this.beforeForce.bind(by),
+          args: [event],
           order: -1,
-          prependArg: event,
-          prependArgOutput: true,
-          return: "beforeForce",
         },
-        { force: by.force.bind(by) }
+        { force: by.force.bind(by), order: 0 }
       )
     }
   }
@@ -92,11 +87,11 @@ export class Render {
     return element
   }
 
-  afterRender(
-    output: Record<string, any>,
-    id: string
-  ): Element {
-    const element = output.render as Element
+  afterRender(event: LoadedEvent, id: string): Element {
+    const { by } = event
+    const { memo } = this.patch.find(by.build)
+
+    const element = memo.build as Element
     const ssrElement = this.ssrElements[id]
 
     if (element && ssrElement && element !== ssrElement) {
@@ -121,7 +116,7 @@ export class Render {
     delete this.elements[id]
     delete this.ssrElements[id]
 
-    return by.render(id, ...args)
+    return by.build(id, ...args)
   }
 
   createElement(tagName): Element {

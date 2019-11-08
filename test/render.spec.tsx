@@ -1,34 +1,37 @@
-/** @jsx renderLib.createElement */
+/** @jsx render.createElement */
 
-import Fn2 from "fn2"
-import patch from "fn2/dist/cjs/patch"
-import load from "@loaded/loaded"
+import fn2 from "fn2"
+import patch from "@fn2/patch"
+import load from "@fn2/loaded"
+import tinyId from "@fn2/tiny-id"
 
 import expect from "./expect"
-import renderLib from "../src"
+import render from "../src"
 import resetUndom from "./resetUndom"
 
 beforeEach(() => resetUndom())
 
 it("renders", () => {
-  class MyComponent {
-    renderLib: typeof renderLib = null
+  expect.assertions(3)
 
-    init(lid: string[]): void {
-      expect(1).toBe(1)
+  class MyComponent {
+    render: typeof render = null
+
+    init(id: string): void {
+      expect(id).toBe("id")
     }
 
-    render(id: string): Element {
-      expect(1).toBe(1)
+    build(id: string): Element {
+      expect(id).toBe("id")
       return <div id={id} />
     }
   }
 
   const myComponent = new MyComponent()
 
-  load(Fn2, { Fn2, myComponent, patch, renderLib })
+  load(fn2, { fn2, myComponent, patch, render, tinyId })
 
-  expect(myComponent.render("id")).toEqual(
+  expect(myComponent.build("id")).toEqual(
     expect.any(Element)
   )
 })
