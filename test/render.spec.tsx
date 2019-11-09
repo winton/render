@@ -1,6 +1,5 @@
 /** @jsx render.createElement */
 
-import fn2 from "fn2"
 import patch from "@fn2/patch"
 import load from "@fn2/loaded"
 import tinyId from "@fn2/tiny-id"
@@ -29,7 +28,7 @@ it("renders", () => {
 
   const myComponent = new MyComponent()
 
-  load(fn2, { fn2, myComponent, patch, render, tinyId })
+  load({ myComponent, patch, render, tinyId })
 
   expect(myComponent.build("id")).toEqual(
     expect.any(Element)
