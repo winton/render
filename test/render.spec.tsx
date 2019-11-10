@@ -2,6 +2,7 @@
 
 import patch from "@fn2/patch"
 import load from "@fn2/loaded"
+import logger from "@fn2/logger"
 import tinyId from "@fn2/tiny-id"
 import undom from "undom"
 
@@ -28,7 +29,7 @@ it("renders", () => {
 
   const myComponent = new MyComponent()
 
-  load({ myComponent, patch, render, tinyId })
+  load({ logger, myComponent, patch, render, tinyId })
 
   expect(myComponent.build("id")).toEqual(
     expect.any(Element)
