@@ -3,12 +3,12 @@
 import patch from "@fn2/patch"
 import load from "@fn2/loaded"
 import tinyId from "@fn2/tiny-id"
+import undom from "undom"
 
 import expect from "./expect"
-import render from "../src"
-import resetUndom from "./resetUndom"
+import render, { resetUndom } from "../src"
 
-beforeEach(() => resetUndom())
+beforeEach(() => resetUndom(undom))
 
 it("renders", () => {
   expect.assertions(3)

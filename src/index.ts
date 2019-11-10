@@ -194,3 +194,4 @@ export class Render {
 }
 
 export default new Render()
+export * from "./resetUndom"
