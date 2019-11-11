@@ -7,7 +7,8 @@ import tinyId from "@fn2/tiny-id"
 import undom from "undom"
 
 import expect from "./expect"
-import render, { resetUndom } from "../src"
+import resetUndom from "./resetUndom"
+import render from "../src"
 
 beforeEach(() => resetUndom(undom))
 

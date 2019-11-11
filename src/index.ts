@@ -13,10 +13,10 @@ declare global {
 export class Render {
   patch: typeof patch = null
 
-  elements: Record<string, Element> = {}
-  ssrElements: Record<string, Element> = {}
+  elements: Record<string, Element>
+  ssrElements: Record<string, Element>
 
-  private events: Record<string, boolean> = {}
+  private events: Record<string, boolean>
 
   private htmlProps = {
     className: true,
@@ -26,6 +26,10 @@ export class Render {
     tabIndex: true,
     textContent: true,
     value: true,
+  }
+
+  constructor() {
+    this.reset()
   }
 
   loadedBy(event: LoadedEvent): void {
@@ -60,6 +64,12 @@ export class Render {
         { force: by.force.bind(by), order: 0 }
       )
     }
+  }
+
+  reset(): void {
+    this.elements = {}
+    this.ssrElements = {}
+    this.events = {}
   }
 
   beforeRender(
@@ -194,4 +204,3 @@ export class Render {
 }
 
 export default new Render()
-export * from "./resetUndom"
