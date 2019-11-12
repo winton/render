@@ -1,16 +1,16 @@
 /** @jsx render.createElement */
 
 import patch from "@fn2/patch"
-import load from "@fn2/loaded"
+import loaded from "@fn2/loaded"
 import logger from "@fn2/logger"
+import ssr from "@fn2/ssr"
 import tinyId from "@fn2/tiny-id"
 import undom from "undom"
 
 import expect from "./expect"
-import resetUndom from "./resetUndom"
 import render from "../src"
 
-beforeEach(() => resetUndom(undom))
+beforeEach(() => loaded.reset())
 
 it("renders", () => {
   expect.assertions(3)
@@ -30,7 +30,15 @@ it("renders", () => {
 
   const myComponent = new MyComponent()
 
-  load({ logger, myComponent, patch, render, tinyId })
+  loaded.load({
+    logger,
+    myComponent,
+    patch,
+    render,
+    ssr,
+    tinyId,
+    undom,
+  })
 
   expect(myComponent.build("id")).toEqual(
     expect.any(Element)
