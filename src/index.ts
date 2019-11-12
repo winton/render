@@ -1,4 +1,6 @@
 import patch from "@fn2/patch"
+import ssr from "@fn2/ssr"
+
 import { LoadedEvent } from "@fn2/loaded"
 
 declare global {
@@ -12,9 +14,11 @@ declare global {
 
 export class Render {
   patch: typeof patch = null
+  ssr: typeof ssr = null
 
   elements: Record<string, Element>
   ssrElements: Record<string, Element>
+  doc: Document
 
   private events: Record<string, boolean>
 
@@ -30,6 +34,14 @@ export class Render {
 
   constructor() {
     this.reset()
+  }
+
+  loaded(): void {
+    if (this.ssr) {
+      this.doc = this.ssr.dom.document
+    } else {
+      this.doc = document
+    }
   }
 
   loadedBy(event: LoadedEvent): void {
@@ -72,13 +84,13 @@ export class Render {
     this.events = {}
   }
 
-  beforeRender(
+  private beforeRender(
     event: LoadedEvent,
     id: string,
     ...args: any[]
   ): Element {
     const { by } = event
-    const ssrElement = document.getElementById(id)
+    const ssrElement = this.doc.getElementById(id)
 
     let element = this.elements[id]
 
@@ -97,7 +109,10 @@ export class Render {
     return element
   }
 
-  afterRender(event: LoadedEvent, id: string): Element {
+  private afterRender(
+    event: LoadedEvent,
+    id: string
+  ): Element {
     const { by } = event
     const { memo } = this.patch.find(by.build)
 
@@ -116,7 +131,7 @@ export class Render {
     return element
   }
 
-  beforeForce(
+  private beforeForce(
     event: LoadedEvent,
     id: string,
     ...args: any[]
@@ -129,11 +144,11 @@ export class Render {
     return by.build(id, ...args)
   }
 
-  createElement(tagName): Element {
+  private createElement(tagName): Element {
     const node =
       tagName.nodeType === 1
         ? tagName
-        : document.createElement(tagName)
+        : this.doc.createElement(tagName)
 
     for (let i = 1; i < arguments.length; ++i) {
       // eslint-disable-next-line
@@ -164,7 +179,7 @@ export class Render {
               key.charCodeAt(2) > 64 &&
               !this.events[key]
             ) {
-              document.addEventListener(
+              this.doc.addEventListener(
                 key.slice(2).toLowerCase(),
                 function(e): any {
                   let tgt: any = e.target
@@ -187,14 +202,14 @@ export class Render {
             node.appendChild(
               arg[k].nodeType
                 ? arg[k]
-                : document.createTextNode(arg[k])
+                : this.doc.createTextNode(arg[k])
             )
           }
         } else {
           node.appendChild(
             arg.nodeType
               ? arg
-              : document.createTextNode(arg)
+              : this.doc.createTextNode(arg)
           )
         }
       }

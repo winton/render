@@ -31,13 +31,13 @@ it("renders", () => {
   const myComponent = new MyComponent()
 
   loaded.load({
+    dom: undom(),
     logger,
     myComponent,
     patch,
     render,
     ssr,
     tinyId,
-    undom,
   })
 
   expect(myComponent.build("id")).toEqual(
