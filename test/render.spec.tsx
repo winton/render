@@ -13,18 +13,17 @@ import render from "../src"
 beforeEach(() => loaded.reset())
 
 it("renders", () => {
-  expect.assertions(3)
-
   class MyComponent {
     render: typeof render = null
 
-    init(id: string): void {
-      expect(id).toBe("id")
-    }
+    id = "myComponent"
+    cache: Element
 
-    build(id: string): Element {
-      expect(id).toBe("id")
-      return <div id={id} />
+    element(): Element {
+      if (this.cache) {
+        return this.cache
+      }
+      return <div id={this.id} />
     }
   }
 
@@ -40,7 +39,18 @@ it("renders", () => {
     tinyId,
   })
 
-  expect(myComponent.build("id")).toEqual(
-    expect.any(Element)
-  )
+  const ssrEl = <div id="myComponent" />
+  render.doc.body.appendChild(ssrEl)
+
+  const el = myComponent.element()
+  const getEl = render.doc.getElementById(el.id)
+
+  expect(el).toEqual(expect.any(Element))
+  expect(el.id).toBe("myComponent")
+
+  expect(el).toBe(getEl)
+  expect(el).not.toBe(ssrEl)
+
+  const el2 = myComponent.element()
+  expect(el).toBe(el2)
 })

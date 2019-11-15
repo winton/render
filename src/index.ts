@@ -16,13 +16,10 @@ export class Render {
   patch: typeof patch = null
   ssr: typeof ssr = null
 
-  elements: Record<string, Element>
-  ssrElements: Record<string, Element>
   doc: Document
+  events: Record<string, boolean>
 
-  private events: Record<string, boolean>
-
-  private htmlProps = {
+  htmlProps = {
     className: true,
     id: true,
     innerHTML: true,
@@ -36,6 +33,10 @@ export class Render {
     this.reset()
   }
 
+  reset(): void {
+    this.events = {}
+  }
+
   loaded(): void {
     if (this.ssr) {
       this.doc = this.ssr.dom.document
@@ -47,104 +48,44 @@ export class Render {
   loadedBy(event: LoadedEvent): void {
     const { by } = event
 
-    if (by.build) {
+    if (by.element) {
       this.patch.create(
         by,
-        "build",
+        "element",
         {
-          beforeRender: this.beforeRender.bind(this),
-          args: [event],
+          element: by.element.bind(by),
           order: -1,
         },
-        { build: by.build.bind(by), order: 0 },
         {
-          afterRender: this.afterRender.bind(this),
+          afterElement: this.afterElement.bind(this),
           args: [event],
+          order: 0,
         }
       )
     }
-
-    if (by.force) {
-      this.patch.create(
-        by,
-        "force",
-        {
-          beforeForce: this.beforeForce.bind(by),
-          args: [event],
-          order: -1,
-        },
-        { force: by.force.bind(by), order: 0 }
-      )
-    }
   }
 
-  reset(): void {
-    this.elements = {}
-    this.ssrElements = {}
-    this.events = {}
-  }
-
-  private beforeRender(
-    event: LoadedEvent,
-    id: string,
-    ...args: any[]
-  ): Element {
+  afterElement(event: LoadedEvent): Element {
     const { by } = event
-    const ssrElement = this.doc.getElementById(id)
+    const { memo } = this.patch.find(by.element)
+    const element = memo.element as Element
 
-    let element = this.elements[id]
+    if (element && by.cache !== element) {
+      by.cache = element
 
-    if (ssrElement) {
-      this.ssrElements[id] = ssrElement
+      if (by.id) {
+        const docEl = this.doc.getElementById(by.id)
+
+        if (docEl) {
+          docEl.parentNode.replaceChild(element, docEl)
+        }
+      }
     }
 
-    if (!element && by.init) {
-      element = by.init(id, ssrElement, ...args)
-    }
-
-    if (element) {
-      this.elements[id] = element
-    }
-
-    return element
+    return by.cache
   }
 
-  private afterRender(
-    event: LoadedEvent,
-    id: string
-  ): Element {
-    const { by } = event
-    const { memo } = this.patch.find(by.build)
-
-    const element = memo.build as Element
-    const ssrElement = this.ssrElements[id]
-
-    if (element && ssrElement && element !== ssrElement) {
-      ssrElement.parentNode.replaceChild(
-        element,
-        ssrElement
-      )
-    }
-
-    this.elements[id] = element
-
-    return element
-  }
-
-  private beforeForce(
-    event: LoadedEvent,
-    id: string,
-    ...args: any[]
-  ): Element {
-    const { by } = event
-
-    delete this.elements[id]
-    delete this.ssrElements[id]
-
-    return by.build(id, ...args)
-  }
-
-  private createElement(tagName): Element {
+  createElement(tagName): Element {
     const node =
       tagName.nodeType === 1
         ? tagName
