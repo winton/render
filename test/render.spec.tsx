@@ -20,10 +20,7 @@ it("renders", () => {
     cache: Element
 
     element(): Element {
-      if (this.cache) {
-        return this.cache
-      }
-      return <div id={this.id} />
+      return this.cache || <div id={this.id} />
     }
   }
 
