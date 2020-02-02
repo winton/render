@@ -3,16 +3,8 @@ import ssr from "@fn2/ssr"
 
 import { LoadedEvent } from "@fn2/loaded"
 
-declare global {
-  // eslint-disable-next-line
-  namespace JSX {
-    interface IntrinsicElements {
-      [prop: string]: any
-    }
-  }
-}
-
 export class Render {
+  browser: boolean = null
   patch: typeof patch = null
   ssr: typeof ssr = null
 
@@ -43,6 +35,12 @@ export class Render {
     } else {
       this.doc = document
     }
+
+    if (!this.browser && !global["window"]) {
+      global["window"] = {}
+    }
+
+    window["jsxFactory"] = this.createElement.bind(this)
   }
 
   loadedBy(event: LoadedEvent): void {

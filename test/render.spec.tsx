@@ -1,5 +1,3 @@
-/** @jsx render.createElement */
-
 import patch from "@fn2/patch"
 import loaded from "@fn2/loaded"
 import logger from "@fn2/logger"

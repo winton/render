@@ -6,6 +6,7 @@
     "declaration": true,
     "esModuleInterop": true,
     "jsx": "react",
+    "jsxFactory": "window.jsxFactory",
     "moduleResolution": "node",
     "sourceMap": true
   }
