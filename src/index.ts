@@ -138,11 +138,13 @@ export class Render {
       } else {
         if (Array.isArray(arg)) {
           for (let k = 0; k < arg.length; ++k) {
-            node.appendChild(
-              arg[k].nodeType
-                ? arg[k]
-                : this.doc.createTextNode(arg[k])
-            )
+            if (arg[k]) {
+              node.appendChild(
+                arg[k].nodeType
+                  ? arg[k]
+                  : this.doc.createTextNode(arg[k])
+              )
+            }
           }
         } else {
           node.appendChild(
