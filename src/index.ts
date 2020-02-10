@@ -131,7 +131,7 @@ export class Render {
               )
               this.events[key] = true
             }
-          } else {
+          } else if (val !== undefined) {
             node.setAttribute(key, val)
           }
         }
