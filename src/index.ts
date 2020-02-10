@@ -103,6 +103,9 @@ export class Render {
         ) {
           const key = ks[j],
             val = arg[key]
+          if (val === undefined) {
+            continue
+          }
           if (key === "style") {
             node.style.cssText = val
           } else if (
@@ -131,7 +134,7 @@ export class Render {
               )
               this.events[key] = true
             }
-          } else if (val !== undefined) {
+          } else {
             node.setAttribute(key, val)
           }
         }
